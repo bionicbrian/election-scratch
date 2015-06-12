@@ -32,11 +32,19 @@ var Candidate = React.createClass({
             }
         };
 
-        var votesValue = this.props.candidate.votes.reduce((total, vote) => {
-            return total + vote.value;
-        }, 0);
+        var voteTally = () => {
+            var votesValue = this.props.candidate.votes.reduce((total, vote) => {
+                return total + vote.value;
+            }, 0);
 
-        return (<li>{candidateName()} | {votesValue} votes | {action()}</li>);
+            if (this.props.isShowingVotes) {
+                return <span>| {votesValue} votes</span>;
+            } else {
+                return "";
+            }
+        };
+
+        return (<li>{candidateName()} {voteTally()} | {action()}</li>);
     }
 });
 

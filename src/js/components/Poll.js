@@ -6,6 +6,12 @@ import addCandidate from "../actions/addCandidate";
 import pollStore from "../stores/PollsInMemory";
 
 var Poll = React.createClass({
+    getInitialState() {
+        return {
+            isShowingVotes: false
+        };
+    },
+
     componentDidMount() {
         pollStore.on("CHANGE", () => this.forceUpdate());
     },
@@ -26,9 +32,13 @@ var Poll = React.createClass({
         addCandidate(candidateName, candidateLink);
     },
 
+    toggleShowVotes() {
+        this.setState({ isShowingVotes: !this.state.isShowingVotes });
+    },
+
     render() {
         var poll = this.props.poll;
-        var lis = poll.candidates.map((candidate) => (<Candidate key={candidate.id} candidate={candidate} />));
+        var lis = poll.candidates.map((candidate) => (<Candidate key={candidate.id} isShowingVotes={this.state.isShowingVotes} candidate={candidate} />));
 
         return (
             <div className="container">
@@ -48,6 +58,7 @@ var Poll = React.createClass({
                     </div>
                 </div>
                 <h3>Candidates:</h3>
+                <button onClick={this.toggleShowVotes}>Toggle results view</button>
                 <ul>{lis}</ul>
             </div>
         );

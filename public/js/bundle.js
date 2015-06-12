@@ -24100,17 +24100,31 @@ var Candidate = _react2["default"].createClass({
             }
         };
 
-        var votesValue = this.props.candidate.votes.reduce(function (total, vote) {
-            return total + vote.value;
-        }, 0);
+        var voteTally = function voteTally() {
+            var votesValue = _this.props.candidate.votes.reduce(function (total, vote) {
+                return total + vote.value;
+            }, 0);
+
+            if (_this.props.isShowingVotes) {
+                return _react2["default"].createElement(
+                    "span",
+                    null,
+                    "| ",
+                    votesValue,
+                    " votes"
+                );
+            } else {
+                return "";
+            }
+        };
 
         return _react2["default"].createElement(
             "li",
             null,
             candidateName(),
+            " ",
+            voteTally(),
             " | ",
-            votesValue,
-            " votes | ",
             action()
         );
     }
@@ -24147,6 +24161,12 @@ var _storesPollsInMemory2 = _interopRequireDefault(_storesPollsInMemory);
 var Poll = _react2["default"].createClass({
     displayName: "Poll",
 
+    getInitialState: function getInitialState() {
+        return {
+            isShowingVotes: false
+        };
+    },
+
     componentDidMount: function componentDidMount() {
         var _this = this;
 
@@ -24175,10 +24195,16 @@ var Poll = _react2["default"].createClass({
         (0, _actionsAddCandidate2["default"])(candidateName, candidateLink);
     },
 
+    toggleShowVotes: function toggleShowVotes() {
+        this.setState({ isShowingVotes: !this.state.isShowingVotes });
+    },
+
     render: function render() {
+        var _this3 = this;
+
         var poll = this.props.poll;
         var lis = poll.candidates.map(function (candidate) {
-            return _react2["default"].createElement(_Candidate2["default"], { key: candidate.id, candidate: candidate });
+            return _react2["default"].createElement(_Candidate2["default"], { key: candidate.id, isShowingVotes: _this3.state.isShowingVotes, candidate: candidate });
         });
 
         return _react2["default"].createElement(
@@ -24227,6 +24253,11 @@ var Poll = _react2["default"].createClass({
                 "h3",
                 null,
                 "Candidates:"
+            ),
+            _react2["default"].createElement(
+                "button",
+                { onClick: this.toggleShowVotes },
+                "Toggle results view"
             ),
             _react2["default"].createElement(
                 "ul",
