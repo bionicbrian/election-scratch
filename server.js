@@ -22,8 +22,13 @@ app.get("/", log, function (req, res) {
     res.sendFile(index);
 });
 
-io.on("connection", function () {
+io.on("connection", function (socket) {
     console.log("A user connected!");
+
+    socket.on("candidate-add", function (data) {
+        console.log("got a add candidate event");
+        console.dir(data);
+    });
 });
 
 http.listen(3000, function () {
