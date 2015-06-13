@@ -1,10 +1,10 @@
 "use strict";
 
 import Q from "q";
-import AppDispatcher from "../AppDispatcher";
+import appDispatcher from "../appDispatcher";
 
 export default function removeCandidate(candidateId) {
-    AppDispatcher.handle({
+    appDispatcher.handle({
         type: enums.REMOVE_CANDIDATE,
         data: { candidateId }
     });

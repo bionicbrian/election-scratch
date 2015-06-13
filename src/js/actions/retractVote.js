@@ -1,11 +1,11 @@
 "use strict";
 
 import Q from "q";
-import AppDispatcher from "../AppDispatcher";
+import appDispatcher from "../appDispatcher";
 import enums from "../enums";
 
 export default function retractVote(candidateId) {
-    AppDispatcher.handle({
+    appDispatcher.handle({
         type: enums.RETRACT_VOTE,
         data: { candidateId }
     });

@@ -2,10 +2,10 @@
 
 import Q from "q";
 import enums from "../enums";
-import AppDispatcher from "../AppDispatcher";
+import appDispatcher from "../appDispatcher";
 
 export default function castVote(candidateId, value) {
-    AppDispatcher.handle({
+    appDispatcher.handle({
         type: enums.CAST_VOTE,
         data: { candidateId, value }
     });

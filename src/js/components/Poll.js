@@ -3,7 +3,6 @@
 import React from "react";
 import Candidate from "./Candidate";
 import addCandidate from "../actions/addCandidate";
-import pollStore from "../stores/PollsInMemory";
 
 var Poll = React.createClass({
     getInitialState() {
@@ -13,11 +12,11 @@ var Poll = React.createClass({
     },
 
     componentDidMount() {
-        pollStore.on("CHANGE", () => this.forceUpdate());
+        this.props.poll.on("CHANGE", () => this.forceUpdate());
     },
 
     componentWillUnmount() {
-        pollStore.off("CHANGE", () => this.forceUpdate());
+        this.props.poll.off("CHANGE", () => this.forceUpdate());
     },
 
     addCandidate(event) {

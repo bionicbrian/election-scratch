@@ -1,6 +1,6 @@
 "use strict";
 
-var AppDispatcher = {
+var appDispatcher = {
     callbacks: [],
     register(callback) {
         this.callbacks.push(callback);
@@ -10,4 +10,4 @@ var AppDispatcher = {
     }
 };
 
-export default AppDispatcher;
+export default appDispatcher;
