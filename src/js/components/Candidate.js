@@ -1,17 +1,14 @@
 "use strict";
 
 import React from "react";
-import castVote from "../actions/castVote";
-import retractVote from "../actions/retractVote";
 
 var Candidate = React.createClass({
     castVote() {
-        var value = 1;
-        castVote(this.props.candidate.id, value);
+        this.props.candidate.castVote();
     },
 
     retractVote() {
-        retractVote(this.props.candidate.id);
+        this.props.candidate.retractVote();
     },
 
     render() {

@@ -2,7 +2,6 @@
 
 import React from "react";
 import Candidate from "./Candidate";
-import addCandidate from "../actions/addCandidate";
 
 var Poll = React.createClass({
     getInitialState() {
@@ -28,7 +27,7 @@ var Poll = React.createClass({
         var candidateLink = this.refs.newCandidateLink.getDOMNode().value;
         this.refs.newCandidateLink.getDOMNode().value = "";
 
-        addCandidate(candidateName, candidateLink);
+        this.props.poll.addCandidate(candidateName, candidateLink);
     },
 
     toggleShowVotes() {

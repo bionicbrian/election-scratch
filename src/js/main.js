@@ -2,9 +2,8 @@
 
 import React from "react";
 import Poll from "./components/Poll";
-import appDispatcher from "./appDispatcher";
-import PollModel from "./models/PollModel";
-import CandidateModel from "./models/CandidateModel";
+import PollModel from "./models/Poll";
+import CandidateModel from "./models/Candidate";
 
 var store = {
     candidates: [],
@@ -16,9 +15,10 @@ var store = {
         this[type] = newList;
     }
 };
+var ballot = { id: 123 };
 
-var candidateFactory = (spec) => new CandidateModel(spec);
-
-var poll = new PollModel(store, global.io(), appDispatcher, candidateFactory);
+var socket = global.io();
+var candidateFactory = (...args) => new CandidateModel(...args);
+var poll = new PollModel({ ballot, candidateFactory, store, socket });
 
 React.render(<Poll poll={ poll } />, document.querySelector("#main"));
