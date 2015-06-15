@@ -12,16 +12,17 @@ export default function Poll({ candidateFactory, ballot, store, socket }) {
 
     this.addCandidate = (name, link) => {
         var c = candidateFactory(name, link, ballot);
-        c.on("cast-vote", publishChange);
-        c.on("retract-vote", publishChange);
+
+        c.onMatch("*", publishChange);
+        emit("candidate-add", c);
+        publishChange();
 
         store.add("candidates", c);
-        emit("candidate-add", c);
 
-        publishChange();
         return Q.resolve();
     };
 
+    // This needs to be cleaned up, made to work. :)
     this.removeCandidate = ({ candidateId }) => {
         store.remove("candidates", candidateId);
 
