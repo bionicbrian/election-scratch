@@ -4,7 +4,7 @@ import Q from "q";
 import _ from "underscore";
 import { makeEmitter } from "pubit-as-promised";
 
-export default function Candidate(name, link, ballot) {
+export default function Candidate(name, link, ballot, gateway) {
     this.id = _.uniqueId("candidate_");
     this.name = name;
     this.link = link || "";
@@ -28,6 +28,7 @@ export default function Candidate(name, link, ballot) {
         }
 
         publish("cast-vote", vote);
+        gateway.addVote({ id: this.id, vote });
         return Q.resolve();
     };
 
@@ -40,6 +41,7 @@ export default function Candidate(name, link, ballot) {
             return hasLocalVote;
         });
 
+        gateway.removeVote({ id: this.id, ballotId: ballot.id });
         publish("retract-vote", ballot.id);
         this.votes = newVotes;
     };

@@ -4,6 +4,7 @@ import React from "react";
 import Poll from "./components/Poll";
 import PollModel from "./models/Poll";
 import CandidateModel from "./models/Candidate";
+import Gateway from "./gateways/PollGateway";
 
 var store = {
     candidates: [],
@@ -18,7 +19,8 @@ var store = {
 var ballot = { id: 123 };
 
 var socket = global.io();
+var gateway = new Gateway(socket);
 var candidateFactory = (...args) => new CandidateModel(...args);
-var poll = new PollModel({ ballot, candidateFactory, store, socket });
+var poll = new PollModel({ ballot, candidateFactory, store, gateway });
 
 React.render(<Poll poll={ poll } />, document.querySelector("#main"));
