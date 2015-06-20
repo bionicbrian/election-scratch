@@ -4,29 +4,20 @@ import Q from "q";
 import _ from "underscore";
 import { makeEmitter } from "pubit-as-promised";
 
-export default function Poll({ candidateFactory, ballot, store, gateway }) {
+export default function Poll({ candidateFactory, ballot, store }) {
     var publish = makeEmitter(this, ["CHANGE"]);
     var publishChange = () => publish("CHANGE");
 
+    store.on("CHANGE", publishChange);
+
     this.addCandidate = (name, link) => {
-        var c = candidateFactory(name, link, ballot, gateway);
-
-        c.onMatch("*", publishChange);
-        gateway.addCandidate(c);
-        publishChange();
-
-        store.add("candidates", c);
-
-        return Q.resolve();
+        var c = candidateFactory(name, link, ballot);
+        store.add("candidates", c.data);
     };
 
     // This needs to be cleaned up, made to work. :)
     this.removeCandidate = ({ candidateId }) => {
         store.remove("candidates", candidateId);
-        gateway.removeCandidate(candidateId);
-
-        publishChange();
-        return Q.resolve();
     };
 
     Object.defineProperty(this, "candidates", {

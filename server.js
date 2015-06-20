@@ -25,22 +25,23 @@ app.get("/", log, function (req, res) {
 io.on("connection", function (socket) {
     console.log("A user connected!");
 
-    socket.on("candidate-add", function (data) {
+    socket.on("candidates-add", function (data) {
         console.log("got a ADD CANDIDATE event");
         console.dir(data);
+        socket.broadcast.emit("candidate-add", data);
     });
 
-    socket.on("candidate-remove", function (data) {
+    socket.on("candidates-remove", function (data) {
         console.log("got a REMOVE CANDIDATE event");
         console.dir(data);
     });
 
-    socket.on("vote-add", function (data) {
+    socket.on("votes-add", function (data) {
         console.log("got a ADD VOTE event");
         console.dir(data);
     });
 
-    socket.on("vote-remove", function (data) {
+    socket.on("votes-remove", function (data) {
         console.log("got a REMOVE VOTE event");
         console.dir(data);
     });
