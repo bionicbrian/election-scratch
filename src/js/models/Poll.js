@@ -2,27 +2,37 @@
 
 import Q from "q";
 import _ from "underscore";
+import { ADD_CANDIDATE, REMOVE_CANDIDATE } from "../enums";
 import { makeEmitter } from "pubit-as-promised";
 
 export default function Poll({ candidateFactory, ballot, store }) {
     var publish = makeEmitter(this, ["CHANGE"]);
-    var publishChange = () => publish("CHANGE");
+    var publishChange = (data) => publish("CHANGE", data);
 
-    store.on("CHANGE", publishChange);
+    store.on("CHANGE", (data) => publishChange(data));
+
+    var candidates = [];
 
     this.addCandidate = (name, link) => {
-        var c = candidateFactory(name, link, ballot);
-        store.add("candidates", c.data);
+        var c = candidateFactory(name, link, ballot, publishChange);
+        candidates.push(c);
+        publishChange({
+            type: ADD_CANDIDATE,
+            payload: { pollId: this.id, candidate: c }
+        });
     };
 
-    // This needs to be cleaned up, made to work. :)
     this.removeCandidate = ({ candidateId }) => {
-        store.remove("candidates", candidateId);
+        candidates = candidates.reject((candidate) => candidate.id === candidateId);
+        publishChange({
+            type: REMOVE_CANDIDATE,
+            payload: { pollId: this.id, candidateId }
+        });
     };
 
     Object.defineProperty(this, "candidates", {
         get() {
-            return store.candidates;
+            return candidates;
         },
         enumerable: true
     });

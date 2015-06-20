@@ -2,9 +2,10 @@
 
 import Q from "q";
 import _ from "underscore";
+import enums from "../enums";
 import { makeEmitter } from "pubit-as-promised";
 
-export default function Candidate(name, link, ballot) {
+export default function Candidate(name, link, ballot, publishChange) {
     this.hasLocalVote = false; // THIS IS LOCAL DOMAIN INFO, NOT FOR SERVER
 
     var votes = [];
@@ -18,6 +19,10 @@ export default function Candidate(name, link, ballot) {
             this.hasLocalVote = true;
             vote = { value, ballotId: ballot.id };
             votes.push(vote);
+            publishChange({
+                type: enums.ADD_VOTE,
+                payload: { candidateId: this.id, vote }
+            });
         }
     };
 
@@ -31,6 +36,11 @@ export default function Candidate(name, link, ballot) {
         });
 
         this.votes = newVotes;
+
+        publishChange({
+            type: enums.REMOVE_VOTE,
+            payload: { candidateId: this.id, ballotId: ballot.id }
+        });
     };
 
     Object.defineProperties(this, {
@@ -52,11 +62,6 @@ export default function Candidate(name, link, ballot) {
         "votes": {
             get() {
                 return votes;
-            }
-        },
-        "data": {
-            get() {
-                return _.pick(this, ["id", "link", "name", "votes"]);
             }
         }
     });

@@ -25,14 +25,11 @@ class SocketStore {
     }
 
     add(type, data) {
-        this[type].push(data);
         this._emit(`${type}-add`, data);
         this._publish("CHANGE");
     }
 
     remove(type, id) {
-        var i = _.findLastIndex(this[type], { id: id });
-        this[type].splice(i, 1);
         this._emit(`${type}-remove`, { id });
         this._publish("CHANGE");
     }
