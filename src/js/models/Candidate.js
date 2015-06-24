@@ -11,23 +11,19 @@ export default function Candidate({ name, link, ballot, publisher: parentPublish
     this.id = _.uniqueId("candidate_");
     this.link = link || "";
     this.name = name;
-    this.votes = [];
 
     var publisher = parentPublisher.extend({ candidateId: this.id });
+    this.votes = observableVector([], publisher.publish.bind(publisher), "candidate");
 
     this.castVote = () => {
-        var vote;
         if (!this.hasLocalVote) {
-            vote = { value: DEFAULT_VOTE_VALUE, ballotId: ballot.id };
-            this.votes.push(vote);
-            publisher.publish("vote-add", vote);
+            this.votes.add({ value: DEFAULT_VOTE_VALUE, ballotId: ballot.id });
         }
     };
 
     this.retractVote = () => {
         var vote = _.findWhere(this.votes, { ballotId: ballot.id });
-        this.votes.splice(this.votes.indexOf(vote), 1);
-        publisher.publish("vote-remove", vote);
+        this.votes.remove(vote);
     };
 
 

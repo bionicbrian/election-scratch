@@ -12,17 +12,15 @@ export default function Poll({ candidateFactory, ballot }) {
     var publish = makeEmitter(this, ["candidate-add", "candidate-remove", "vote-add", "vote-remove"]);
     var publisher = new ProxyPublisher(publish, { pollId: this.id });
 
-    this.candidates = [];
+    this.candidates = observableVector([], publisher.publish.bind(publisher), "candidate");
 
     this.addCandidate = ({ name, link }) => {
         var c = candidateFactory({ name, link, ballot, publisher });
-        this.candidates.push(c);
-        publisher.publish("candidate-add", c);
+        this.candidates.add(c);
     };
 
     this.removeCandidate = ({ candidateId }) => {
         var candidate = _.findWhere(this.candidates, { id: candidateId });
-        this.candidates.splice(this.candidates.indexOf(candidate), 1);
-        publisher.publish("candidate-remove", c);
+        this.candidates.remove(candidate);
     };
 }

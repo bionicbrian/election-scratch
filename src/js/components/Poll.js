@@ -10,9 +10,7 @@ var Poll = React.createClass({
         };
     },
 
-    _unsubscribe() {
-        // implemented on mount
-    },
+    _unsubscribe() { }, // Implemented in componentDidMount
 
     componentDidMount() {
         this._unsubscribe = this.props.poll.onMatch(/^.*$/, () => this.forceUpdate());
