@@ -10,12 +10,16 @@ var Poll = React.createClass({
         };
     },
 
+    _unsubscribe() {
+        // implemented on mount
+    },
+
     componentDidMount() {
-        this.props.poll.on("CHANGE", () => this.forceUpdate());
+        this._unsubscribe = this.props.poll.on("candidate-add", () => this.forceUpdate());
     },
 
     componentWillUnmount() {
-        this.props.poll.off("CHANGE", () => this.forceUpdate());
+        this._unsubscribe();
     },
 
     addCandidate(event) {
@@ -36,7 +40,7 @@ var Poll = React.createClass({
 
     render() {
         var poll = this.props.poll;
-        var lis = poll.candidates.map((candidate) => (<Candidate key={candidate.id} isShowingVotes={this.state.isShowingVotes} candidate={candidate} />));
+        var lis = poll.candidates.val.map((candidate) => (<Candidate key={candidate.id} isShowingVotes={this.state.isShowingVotes} candidate={candidate} />));
 
         return (
             <div className="container">

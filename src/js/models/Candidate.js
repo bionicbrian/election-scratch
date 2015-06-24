@@ -2,51 +2,36 @@
 
 import Q from "q";
 import _ from "underscore";
-import enums from "../enums";
 import { makeEmitter } from "pubit-as-promised";
+import observableVector from "../helpers/observableVector";
 
-export default function Candidate(name, link, ballot, publishChange) {
-    this.hasLocalVote = false; // THIS IS LOCAL DOMAIN INFO, NOT FOR SERVER
+const DEFAULT_VOTE_VALUE = 1;
 
-    var votes = [];
+export default function Candidate({ name, link, ballot, publisher: parentPublisher }) {
+    var id = _.uniqueId("candidate_");
+    link = link || "";
+
+    var publisher = parentPublisher.extend({ candidateId: this.id });
+    var votes = observableVector([], publisher.publish.bind(publisher), "candidate");
 
     this.castVote = () => {
         var vote;
-        var value = 1;
-        var userVoteExists = this.votes.some((vote) => vote.ballotId === ballot.id);
 
-        if (!userVoteExists) {
+        if (!this.hasLocalVote) {
             this.hasLocalVote = true;
-            vote = { value, ballotId: ballot.id };
-            votes.push(vote);
-            publishChange({
-                type: enums.ADD_VOTE,
-                payload: { candidateId: this.id, vote }
-            });
+            votes.add({ value: DEFAULT_VOTE_VALUE, ballotId: ballot.id });
         }
     };
 
-    this.retractVote = () => {
-        var newVotes = _.reject(this.votes, (vote) => {
-            var hasLocalVote = vote.ballotId === ballot.id;
-            if (hasLocalVote) {
-                this.hasLocalVote = false;
-            }
-            return hasLocalVote;
-        });
-
-        this.votes = newVotes;
-
-        publishChange({
-            type: enums.REMOVE_VOTE,
-            payload: { candidateId: this.id, ballotId: ballot.id }
-        });
+    this.retractVote = ({ voteId }) => {
+        var vote = _.findWhere(votes.val, { id: voteId });
+        votes.remove(vote);
     };
 
     Object.defineProperties(this, {
         "id": {
             get() {
-                return _.uniqueId("candidate_");
+                return id;
             }
         },
         "name": {
@@ -56,12 +41,17 @@ export default function Candidate(name, link, ballot, publishChange) {
         },
         "link": {
             get() {
-                return link || "";
+                return link;
             }
         },
         "votes": {
             get() {
                 return votes;
+            }
+        },
+        "hasLocalVote": {
+            get() {
+                return votes.some((vote) => vote.ballotId === ballot.id);
             }
         }
     });

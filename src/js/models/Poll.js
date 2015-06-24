@@ -2,32 +2,25 @@
 
 import Q from "q";
 import _ from "underscore";
-import { ADD_CANDIDATE, REMOVE_CANDIDATE } from "../enums";
 import { makeEmitter } from "pubit-as-promised";
+import observableVector from "../helpers/observableVector";
+import ProxyPublisher from "../helpers/ProxyPublisher";
 
-export default function Poll({ candidateFactory, ballot, store }) {
-    var publish = makeEmitter(this, ["CHANGE"]);
-    var publishChange = (data) => publish("CHANGE", data);
+export default function Poll({ candidateFactory, ballot }) {
+    var publish = makeEmitter(this, ["candidate-add", "candidate-remove", "vote-add", "vote-remove"]);
 
-    store.on("CHANGE", (data) => publishChange(data));
+    var publisher = new ProxyPublisher(publish, { pollId: this.id });
 
-    var candidates = [];
+    var candidates = observableVector([], publisher.publish.bind(publisher), "candidate");
 
-    this.addCandidate = (name, link) => {
-        var c = candidateFactory(name, link, ballot, publishChange);
-        candidates.push(c);
-        publishChange({
-            type: ADD_CANDIDATE,
-            payload: { pollId: this.id, candidate: c }
-        });
+    this.addCandidate = ({ name, link }) => {
+        var c = candidateFactory({ name, link, ballot, publisher });
+        candidates.add(c);
     };
 
     this.removeCandidate = ({ candidateId }) => {
-        candidates = candidates.reject((candidate) => candidate.id === candidateId);
-        publishChange({
-            type: REMOVE_CANDIDATE,
-            payload: { pollId: this.id, candidateId }
-        });
+        var candidate = _.findWhere(candidates.val, { id: candidateId });
+        candidates.remove(candidate);
     };
 
     Object.defineProperty(this, "candidates", {
