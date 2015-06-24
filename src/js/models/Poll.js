@@ -7,26 +7,22 @@ import observableVector from "../helpers/observableVector";
 import ProxyPublisher from "../helpers/ProxyPublisher";
 
 export default function Poll({ candidateFactory, ballot }) {
-    var publish = makeEmitter(this, ["candidate-add", "candidate-remove", "vote-add", "vote-remove"]);
+    this.id = _.uniqueId("poll_");
 
+    var publish = makeEmitter(this, ["candidate-add", "candidate-remove", "vote-add", "vote-remove"]);
     var publisher = new ProxyPublisher(publish, { pollId: this.id });
 
-    var candidates = observableVector([], publisher.publish.bind(publisher), "candidate");
+    this.candidates = [];
 
     this.addCandidate = ({ name, link }) => {
         var c = candidateFactory({ name, link, ballot, publisher });
-        candidates.add(c);
+        this.candidates.push(c);
+        publisher.publish("candidate-add", c);
     };
 
     this.removeCandidate = ({ candidateId }) => {
-        var candidate = _.findWhere(candidates.val, { id: candidateId });
-        candidates.remove(candidate);
+        var candidate = _.findWhere(this.candidates, { id: candidateId });
+        this.candidates.splice(this.candidates.indexOf(candidate), 1);
+        publisher.publish("candidate-remove", c);
     };
-
-    Object.defineProperty(this, "candidates", {
-        get() {
-            return candidates;
-        },
-        enumerable: true
-    });
 }

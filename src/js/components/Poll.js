@@ -15,7 +15,7 @@ var Poll = React.createClass({
     },
 
     componentDidMount() {
-        this._unsubscribe = this.props.poll.on("candidate-add", () => this.forceUpdate());
+        this._unsubscribe = this.props.poll.onMatch(/^.*$/, () => this.forceUpdate());
     },
 
     componentWillUnmount() {
@@ -25,13 +25,13 @@ var Poll = React.createClass({
     addCandidate(event) {
         event.preventDefault();
 
-        var candidateName = this.refs.newCandidateName.getDOMNode().value;
+        var name = this.refs.newCandidateName.getDOMNode().value;
         this.refs.newCandidateName.getDOMNode().value = "";
 
-        var candidateLink = this.refs.newCandidateLink.getDOMNode().value;
+        var link = this.refs.newCandidateLink.getDOMNode().value;
         this.refs.newCandidateLink.getDOMNode().value = "";
 
-        this.props.poll.addCandidate(candidateName, candidateLink);
+        this.props.poll.addCandidate({ name, link });
     },
 
     toggleShowVotes() {
@@ -40,7 +40,7 @@ var Poll = React.createClass({
 
     render() {
         var poll = this.props.poll;
-        var lis = poll.candidates.val.map((candidate) => (<Candidate key={candidate.id} isShowingVotes={this.state.isShowingVotes} candidate={candidate} />));
+        var lis = poll.candidates.map((candidate) => (<Candidate key={candidate.id} isShowingVotes={this.state.isShowingVotes} candidate={candidate} />));
 
         return (
             <div className="container">

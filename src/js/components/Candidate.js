@@ -30,7 +30,7 @@ var Candidate = React.createClass({
         };
 
         var voteTally = () => {
-            var votesValue = this.props.candidate.votes.val.reduce((total, vote) => {
+            var votesValue = this.props.candidate.votes.reduce((total, vote) => {
                 return total + vote.value;
             }, 0);
 
