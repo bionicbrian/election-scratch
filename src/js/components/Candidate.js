@@ -1,22 +1,20 @@
-"use strict";
-
 import React from "react";
 
-var Candidate = React.createClass({
-    castVote() {
+class Candidate extends React.Component {
+    _castVote() {
         this.props.candidate.castVote();
-    },
+    }
 
-    retractVote() {
+    _retractVote() {
         this.props.candidate.retractVote();
-    },
+    }
 
     render() {
         var action = () => {
             if (this.props.candidate.hasLocalVote) {
-                return <button onClick={this.retractVote}>Retract Vote</button>
+                return <button onClick={(ev) => this._retractVote(ev)}>Retract Vote</button>
             } else {
-                return <button onClick={this.castVote}>Cast Vote</button>
+                return <button onClick={(ev) => this._castVote(ev)}>Cast Vote</button>
             }
         };
 
@@ -43,6 +41,6 @@ var Candidate = React.createClass({
 
         return (<li>{candidateName()} {voteTally()} | {action()}</li>);
     }
-});
+}
 
 export default Candidate;
