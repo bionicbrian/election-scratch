@@ -1,6 +1,5 @@
 "use strict";
 
-import Q from "q";
 import _ from "underscore";
 import { makeEmitter } from "pubit-as-promised";
 import observableVector from "../helpers/observableVector";
@@ -13,7 +12,9 @@ export default function Candidate({ name, link, ballot, publisher: parentPublish
     this.name = name;
 
     var publisher = parentPublisher.extend({ candidateId: this.id });
-    this.votes = observableVector([], publisher.publish.bind(publisher), "candidate");
+    var publishWithCandidateId = publisher.publish.bind(publisher);
+
+    this.votes = observableVector([], publishWithCandidateId, "candidate");
 
     this.castVote = () => {
         if (!this.hasLocalVote) {

@@ -7,12 +7,13 @@ import observableVector from "../helpers/observableVector";
 import ProxyPublisher from "../helpers/ProxyPublisher";
 
 export default function Poll({ candidateFactory, ballot }) {
-    this.id = _.uniqueId("poll_");
+    this.id = _.uniqueId("poll_"); // Yep, totally creating a dumb id on the client lolz
 
     var publish = makeEmitter(this, ["candidate-add", "candidate-remove", "vote-add", "vote-remove"]);
     var publisher = new ProxyPublisher(publish, { pollId: this.id });
+    var publishWithPollId = publisher.publish.bind(publisher);
 
-    this.candidates = observableVector([], publisher.publish.bind(publisher), "candidate");
+    this.candidates = observableVector([], publishWithPollId, "candidate");
 
     this.addCandidate = ({ name, link }) => {
         var c = candidateFactory({ name, link, ballot, publisher });
