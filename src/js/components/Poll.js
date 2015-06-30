@@ -29,7 +29,7 @@ class Poll extends React.Component {
 
     _toggleShowVotes() {
         this.setState({ isShowingVotes: !this.state.isShowingVotes });
-    },
+    }
 
     render() {
         var poll = this.props.poll;
@@ -58,6 +58,6 @@ class Poll extends React.Component {
             </div>
         );
     }
-});
+}
 
 export default Poll;
