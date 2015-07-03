@@ -1,5 +1,3 @@
-import _ from "underscore";
-
 class ProxyPublisher {
     constructor(publisher, basePayload) {
         this.publisher = publisher;
@@ -7,11 +5,11 @@ class ProxyPublisher {
     }
 
     extendPayload(obj) {
-        this.basePayload = _.extend(obj, this.basePayload);
+        this.basePayload = Object.assign({}, obj, this.basePayload);
     }
 
     publish(name, payload) {
-        var pl = _.extend(payload, this.basePayload);
+        var pl = Object.assign({}, payload, this.basePayload);
         this.publisher(name, pl);
     }
 
