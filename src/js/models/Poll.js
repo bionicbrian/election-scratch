@@ -1,13 +1,11 @@
-"use strict";
-
 import Q from "q";
-import _ from "underscore";
+import md5 from "MD5";
 import { makeEmitter } from "pubit-as-promised";
 import observableVector from "../helpers/observableVector";
 import ProxyPublisher from "../helpers/ProxyPublisher";
 
 export default function Poll({ candidateFactory, ballot }) {
-    this.id = _.uniqueId("poll_"); // Yep, totally creating a dumb id on the client lolz
+    this.id = md5("candidate" + Date.now());
 
     var publish = makeEmitter(this, ["candidate-add", "candidate-remove", "vote-add", "vote-remove"]);
     var publisher = new ProxyPublisher(publish, { pollId: this.id });
@@ -16,12 +14,14 @@ export default function Poll({ candidateFactory, ballot }) {
     this.candidates = observableVector([], publishWithPollId, "candidate");
 
     this.addCandidate = ({ name, link }) => {
-        var c = candidateFactory({ name, link, ballot, publisher });
-        this.candidates.add(c);
+        var candidate = candidateFactory({ name, link, ballot, publisher });
+        this.candidates.add(candidate);
+        return Q.resolve(Object.assign({}, publisher.basePayload, { candidate }));
     };
 
     this.removeCandidate = ({ candidateId }) => {
         var candidate = _.findWhere(this.candidates, { id: candidateId });
         this.candidates.remove(candidate);
+        return Q.resolve(Object.assign({}, publisher.basePayload, { candidate }));
     };
 }
