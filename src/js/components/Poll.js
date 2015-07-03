@@ -1,5 +1,6 @@
 import React from "react";
 import Candidate from "./Candidate";
+import addCandidate from "../actions/addCandidate";
 
 class Poll extends React.Component {
     constructor(props) {
@@ -24,7 +25,7 @@ class Poll extends React.Component {
         var link = this.refs.newCandidateLink.getDOMNode().value;
         this.refs.newCandidateLink.getDOMNode().value = "";
 
-        this.props.poll.addCandidate({ name, link });
+        addCandidate(this.props.poll, { name, link });
     }
 
     _toggleShowVotes() {
